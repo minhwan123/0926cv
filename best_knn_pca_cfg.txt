@@ -1,0 +1,2 @@
+{'pca': 256, 'metric': 'cosine', 'k': 9}
+acc=0.4888
