@@ -1,17 +1,18 @@
-MinhwanNoh 2022113600
-This is an assignment using knn with Cifar-10 dataset. 
+CIFAR-10 이미지 분류: K-Nearest Neighbors
 
-K-Nearest Neighbors with 5-Fold Cross-Validation
+MinhwanNoh 2022113600
+
+This is an assignment using knn with Cifar-10 dataset.
 
 1. 프로젝트 개요
 
-이미지 데이터셋 CIFAR-10을 K-Nearest Neighbors (KNN) 알고리즘을 사용하여 분류하는 과제
+CIFAR-10을 K-Nearest Neighbors (KNN) 알고리즘을 사용하여 분류하는 과제
 
-**5-Fold 교차 검증(Cross-Validation)**을 적용하여 모델의 하이퍼파라미터(K값)를 최적화하고, 다양한 평가지표를 통해 성능을 객관적으로 측정하는 것을 목표로 함 
+**5-Fold 교차 검증(Cross-Validation)**을 적용하여 모델의 하이퍼파라미터를 최적화하고, 다양한 평가지표를 통해 성능을 객관적으로 측정하는 것을 목표로 함
 
 데이터셋: CIFAR-10 (Training 50,000장, Test 300,000장)
 
-주요 알고리즘: K-Nearest Neighbors (KNN)
+주요 알고리즘: K-Nearest Neighbors 
 
 핵심 기술: Scikit-learn Pipeline, PCA, GridSearchCV
 
@@ -31,7 +32,7 @@ PCA : 3072차원의 고차원 데이터를 256차원으로 축소하여 계산 �
 
 다. 5-Fold 교차 검증을 통한 K값 최적화
 
-GridSearchCV를 사용하여 5-Fold 교차 검증을 수행. 이를 통해 K값의 변화에 따른 모델의 성능을 안정적으로 평가하고 최적의 K값을 탐색
+GridSearchCV를 사용하여 5-Fold 교차 검증을 수행. 이를 통해 K값의 변화에 따른 모델의 성능을 안정적으로 평가하고 최적의 K값을 탐색.
 
 탐색 K값 범위: [1, 3, 5, 7, 9, 11, 13, 15]
 
@@ -41,12 +42,11 @@ GridSearchCV를 사용하여 5-Fold 교차 검증을 수행. 이를 통해 K값�
 
 가. K값에 따른 5-Fold CV 성능 변화
 
-K값이 증가함에 따라 정확도가 꾸준히 상승하는 경향을 보였으며, K=15일 때 평균 정확도가 약 0.5023으로 가장 높게 측정
-
+K값이 증가함에 따라 정확도가 꾸준히 상승하는 경향을 보였으며, K=15일 때 평균 정확도가 약 0.5023으로 가장 높게 측정됨
 
 나. 최적 모델 상세 평가지표
 
-교차 검증을 통해 찾은 최적의 모델(K=15)에 대해 cross_val_predict 함수를 사용하여 상세 평가지표를 산출한 결과는 다음과 같음 
+교차 검증을 통해 찾은 최적의 모델(K=15)에 대해 cross_val_predict 함수를 사용하여 상세 평가지표를 산출한 결과는 다음과 같음
 
               precision    recall  f1-score   support
 
@@ -68,12 +68,11 @@ weighted avg       0.52      0.50      0.50      50000
 
 전체 정확도 (Accuracy): 약 50%
 
-분석: ship(0.62), automobile(0.61), horse(0.59) 클래스에서 높은 F1-score를 기록하며 비교적 분류 성능이 좋았음
-반면, 형태적으로 유사한 동물 클래스인 cat(0.34), dog(0.41), bird(0.43)는 낮은 F1-score를 보여 분류에 어려움을 겪음 
+분석: ship(0.62), automobile(0.61), horse(0.59) 클래스에서 높은 F1-score를 기록하며 비교적 분류 성능이 좋았음. 반면, 형태적으로 유사한 동물 클래스인 cat(0.34), dog(0.41), bird(0.43)는 낮은 F1-score를 보여 분류에 어려움을 겪음 
 
 4. 파일 설명
 
-knn.ipynb: 데이터 로딩부터 교차 검증, 결과 분석 및 최종 예측까지의 모든 과정을 담고 있는 Jupyter Notebook 파일
+knn.ipynb: 데이터 로딩부터 교차 검증, 결과 분석 및 최종 예측까지의 모든 과정을 담고 있는 Jupyter Notebook 파일.
 
 best_knn_model_cv.pkl: 5-Fold 교차 검증을 통해 찾은 최적의 하이퍼파라미터로 학습된 최종 모델
 
