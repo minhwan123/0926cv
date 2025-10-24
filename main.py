@@ -23,17 +23,17 @@ warnings.filterwarnings("ignore")
 # Config 
 # -----------------------------
 class CFG:
-    # 경로 (Windows에서도 안전하게 raw string 사용)
-    TRAIN_DIR    = r"C:\Users\82106\downloads\cifar-10\train\train"   # train 이미지 폴더
+    # Paths (use raw string for Windows safety)
+    TRAIN_DIR    = r"C:\Users\82106\downloads\cifar-10\train\train"   # train image folder
     LABELS_PATH  = r"C:\Users\82106\downloads\cifar-10\trainLabels.csv"  # trainLabels.csv
 
-    TARGET_SIZE = (24, 24)      # 빠른 실험용 (32,32로 바꿔도 됨)
+    TARGET_SIZE = (24, 24)      # Small size for faster experiments (can change to (32,32))
     GRAY = False
     USE_PCA = True
     PCA_N = 128
     K_LIST = [1, 3, 5, 7, 9, 11, 15]
     AVERAGE = "macro"
-    MAX_TRAIN_SAMPLES = None    # 개발 빠른 테스트용: 예) 20000
+    MAX_TRAIN_SAMPLES = None    # For fast debugging: e.g. 20000
     OUT_DIR = "./outputs"
 
 # -----------------------------
@@ -62,7 +62,7 @@ def load_labels_table(labels_path: str) -> pd.DataFrame:
     df = read_table_auto(labels_path)
     cols = {c.lower().strip(): c for c in df.columns}
     if "id" not in cols or "label" not in cols:
-        raise ValueError("trainLabels 파일에는 'id'와 'label' 컬럼이 필요합니다.")
+        raise ValueError("trainLabels file must contain 'id' and 'label' columns.")
     df = df[[cols["id"], cols["label"]]].rename(columns={cols["id"]: "id", cols["label"]: "label"})
     df["id"] = df["id"].astype(str)
     return df
@@ -116,9 +116,9 @@ def prepare_train(cfg: CFG):
     labels_path = cfg.LABELS_PATH
 
     if not os.path.isdir(train_dir):
-        raise FileNotFoundError(f"train 폴더가 없습니다: {train_dir}")
+        raise FileNotFoundError(f"Train folder not found: {train_dir}")
     if not os.path.isfile(labels_path):
-        raise FileNotFoundError(f"trainLabels 파일이 없습니다: {labels_path}")
+        raise FileNotFoundError(f"trainLabels file not found: {labels_path}")
 
     print(f"[Path] TRAIN_DIR   = {train_dir}")
     print(f"[Path] LABELS_PATH = {labels_path}")
@@ -128,7 +128,7 @@ def prepare_train(cfg: CFG):
     df["path"] = df["id"].map(stem2path)
     if df["path"].isna().any():
         miss = df[df["path"].isna()]["id"].head(10).tolist()
-        raise FileNotFoundError(f"이미지 경로 매칭 실패 예시(최대 10개): {miss}")
+        raise FileNotFoundError(f"Failed to match image paths. Example missing IDs (top 10): {miss}")
 
     if cfg.MAX_TRAIN_SAMPLES:
         df = df.sample(cfg.MAX_TRAIN_SAMPLES, random_state=42).reset_index(drop=True)
@@ -170,11 +170,11 @@ def exp_train_test(X, y, cfg: CFG):
 # 2) train/val/test split
 # -----------------------------
 def exp_train_val_test(X, y, cfg: CFG):
-    # 기본 70/15/15
+    # Default 70/15/15 split
     Xtr, Xtmp, ytr, ytmp = train_test_split(X, y, test_size=0.30, random_state=42, stratify=y)
     Xva, Xte, yva, yte = train_test_split(Xtmp, ytmp, test_size=0.5, random_state=42, stratify=ytmp)
 
-    # k 탐색은 validation으로
+    # Hyperparameter search using validation set
     rec = []
     for k in cfg.K_LIST:
         clf = KNeighborsClassifier(n_neighbors=k, metric="euclidean", n_jobs=-1)
@@ -187,7 +187,7 @@ def exp_train_val_test(X, y, cfg: CFG):
     best_k = sorted(rec, key=lambda t: t[1], reverse=True)[0][0]
     print(f"[Selected k] {best_k}")
 
-    # 선택된 k로 train+val 재학습 후 test 평가
+    # Retrain on train+val → Evaluate on test
     clf = KNeighborsClassifier(n_neighbors=best_k, metric="euclidean", n_jobs=-1)
     clf.fit(np.vstack([Xtr, Xva]), np.hstack([ytr, yva]))
     pred = clf.predict(Xte)
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     parser.add_argument("--mode", type=str, default="all", choices=["simple", "valtest", "cv", "all"])
     args = parser.parse_args()
 
-    # 경로 덮어쓰기 가능
+    # Allow overriding paths
     CFG.TRAIN_DIR = args.train_dir
     CFG.LABELS_PATH = args.labels_path
 
